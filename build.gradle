@@ -1,0 +1,51 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.0'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'com.google.cloud.tools.jib' version '3.1.4'
+}
+
+group = 'ru.zserg'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.h2database:h2'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+jib {
+	from {
+		image = 'openjdk:17'
+	}
+	to {
+		image = 'docker.io/zserg/questions2'
+		tags = ['0.1', 'latest']
+	}
+	container {
+		jvmFlags = ['-Dmy.property=example.value', '-Xms512m', '-Xdebug']
+		mainClass = 'ru.zserg.questions.QuestionsApplication'
+		format = 'Docker'
+	}
+}
